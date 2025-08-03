@@ -8,27 +8,29 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+set(CMAKE_PREFIX_PATH "D:/Qt/6.9.0/mingw_64")
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+include_directories(${PROJECT_SOURCE_DIR}/head)
 
 set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
+        src/main.cpp
+        src/mainwindow.cpp
+        head/mainwindow.h
+
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(FYChat
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        logindialog.h logindialog.cpp logindialog.ui
-        registerdialog.h registerdialog.cpp registerdialog.ui
-        singleton.h
-        httpmgr.h httpmgr.cpp
-        global.h
-        global.cpp
+        head/logindialog.h src/logindialog.cpp src/logindialog.ui
+        head/registerdialog.h src/registerdialog.cpp src/registerdialog.ui
+        head/singleton.h
+        head/httpmgr.h src/httpmgr.cpp
+        head/global.h
+        src/global.cpp
+        src/mainwindow.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET FYChat APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
