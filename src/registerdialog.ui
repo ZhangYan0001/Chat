@@ -27,6 +27,13 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
+    <widget class="QToolButton" name="back_btn">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Orientation::Vertical</enum>
@@ -40,7 +47,7 @@
     </spacer>
    </item>
    <item>
-    <widget class="QLabel" name="info_label">
+    <widget class="QLabel" name="err_label">
      <property name="text">
       <string>TextLabel</string>
      </property>
