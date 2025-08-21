@@ -8,12 +8,24 @@ RegisterDialog::RegisterDialog(QWidget *parent) : QDialog(parent), ui(new Ui::Re
   ui->pwd_edid->setEchoMode(QLineEdit::Password);
   ui->confirm_edit->setEchoMode(QLineEdit::Password);
   ui->back_btn->setIcon(QIcon(":/images/previous.png"));
+  ui->login_btn->setDisabled(true);
+  ui->reg_btn->setDisabled(true);
+
+  tipTimer = new QTimer(this);
+  connect(tipTimer, &QTimer::timeout, this, [this]() {
+    ui->err_label->clear();
+    repolish(ui->err_label);
+  });
+
 }
 
 RegisterDialog::~RegisterDialog() { delete ui; }
 void RegisterDialog::showTip(QString str) {
   ui->err_label->setText(str);
   repolish(ui->err_label);
+
+  tipTimer->stop();
+  tipTimer->start(4000);
 }
 
 void RegisterDialog::on_reg_btn_clicked() {}

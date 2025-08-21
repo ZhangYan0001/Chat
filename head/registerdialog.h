@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QRegularExpression>
+#include <QTimer>
 
 namespace Ui {
   class RegisterDialog;
@@ -27,6 +28,7 @@ private slots:
 
 private:
   Ui::RegisterDialog *ui;
+  QTimer *tipTimer;
 signals:
   void back_signal();
 };
