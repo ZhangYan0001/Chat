@@ -1,9 +1,12 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+#include <QFile>
 #include <QWidget>
-#include "QStyle"
 #include <functional>
+#include <QApplication>
+
+#include "QStyle"
 
 enum ReqId {
   ID_GET_VARIFY_CODE = 1001,
@@ -31,5 +34,6 @@ struct UserRegisterInfo {
   QString _pwd;
 };
 
-extern std::function<void(QWidget *)> repolish;
-#endif // GLOBAL_H
+extern std::function<void(QWidget*)> repolish;
+void loadStyleSheet(const QString& qssFile);
+#endif  // GLOBAL_H

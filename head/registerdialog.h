@@ -17,7 +17,7 @@ public:
 
   ~RegisterDialog();
 
-  void showTip(QString str);
+  void showTip(const QString &text,const QString &type);
 
 private slots:
   void on_reg_btn_clicked();

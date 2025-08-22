@@ -1,33 +1,3 @@
-/* 默认 label */
-QLabel#err_label {
-    color: black;
-    background: transparent;
-    font-size: 14px;
-}
-
-/* 错误提示 */
-QLabel#errorTip {
-    color: white;
-    background: #e74c3c;   /* 红色 */
-    border-radius: 6px;
-    padding: 4px 8px;
-}
-
-/* 成功提示 */
-QLabel#successTip {
-    color: white;
-    background: #27ae60;   /* 绿色 */
-    border-radius: 6px;
-    padding: 4px 8px;
-}
-
-/* 警告提示 */
-QLabel#warningTip {
-    color: black;
-    background: #f1c40f;   /* 黄色 */
-    border-radius: 6px;
-    padding: 4px 8px;
-}
 
 QLabel[tipType="default"]{
     color: black;
