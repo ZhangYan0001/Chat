@@ -4,33 +4,44 @@
 #include <QDialog>
 #include <QRegularExpression>
 #include <QTimer>
+#include <memory>
 
+#include "global.h"
 namespace Ui {
-  class RegisterDialog;
+class RegisterDialog;
 }
 
 class RegisterDialog : public QDialog {
   Q_OBJECT
 
-public:
+ public:
   explicit RegisterDialog(QWidget *parent = nullptr);
 
   ~RegisterDialog();
 
-  void showTip(const QString &text,const QString &type);
+  void showTip(const QString &text, const QString &type);
+  void reset();
+  void initValidators();
 
-private slots:
+ private slots:
   void on_reg_btn_clicked();
 
   void on_back_btn_clicked();
 
   void on_getcode_btn_clicked();
 
-private:
+ private:
   Ui::RegisterDialog *ui;
   QTimer *tipTimer;
-signals:
+  UserRegisterInfo *regInfo;
+  bool regValid = false; 
+  bool email_valid = false;
+  bool pwd_valid = false;
+  bool confimr_valid = false;
+  bool code_valid = false;
+ signals:
   void back_signal();
+  void reg_valid_signal();
 };
 
 #endif  // REGISTERDIALOG_H
