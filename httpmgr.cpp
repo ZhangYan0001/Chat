@@ -1,3 +1,3 @@
 #include "httpmgr.h"
 
-httpmgr::httpmgr() {}
+HttpMgr::HttpMgr() {}

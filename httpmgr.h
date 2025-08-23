@@ -7,7 +7,7 @@
 #include "global.h"
 #include "singleton.h"
 
-class HttpMgr : public QObject, public Singleton<HttpMgr>,
+class HttpMgr : public QObject, public Singleton<HttpMgr>
 {
     Q_OBJECT
 public:
