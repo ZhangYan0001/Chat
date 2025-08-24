@@ -2,6 +2,11 @@
 #define LOGINDIALOG_H
 
 #include <QDialog>
+#include <QMessageBox>
+#include <QTimer>
+#include <memory>
+#include <QMovie>
+
 #include "global.h"
 
 namespace Ui {
@@ -23,6 +28,8 @@ class LoginDialog : public QDialog {
 
  private:
   Ui::LoginDialog *ui;
+  std::unique_ptr<UserLoginInfo> loginInfo;
+  QMovie *loadingMovie = nullptr;
 };
 
 #endif  // LOGINDIALOG_H
