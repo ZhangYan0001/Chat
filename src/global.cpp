@@ -5,7 +5,6 @@ std::function<void(QWidget*)> repolish = [](QWidget* w) {
   w->style()->polish(w);
 };
 
-
 void loadStyleSheet(const QString& qssFile) {
   QFile file(qssFile);
   if (file.open(QFile::ReadOnly)) {
@@ -23,7 +22,8 @@ bool validatePassword(const QString& pwd, QString& errMsg) {
   }
 
   // 2. 正则校验：至少包含字母和数字，可以包含符号
-  static const QRegularExpression re(R"(^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]{8,}$)");
+  static const QRegularExpression re(
+      R"(^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]{8,}$)");
 
   if (!re.match(pwd).hasMatch()) {
     errMsg = "密码必须包含字母和数字，可以包含符号";

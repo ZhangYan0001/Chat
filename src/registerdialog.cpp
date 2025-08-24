@@ -12,17 +12,11 @@ RegisterDialog::RegisterDialog(QWidget *parent)
   ui->user_edit->setPlaceholderText("请起一个昵称");
   ui->pwd_edid->setPlaceholderText("设置密码至少8位，字母+数字可包含符号");
   ui->getcode_btn->setEnabled(false);
-  regInfo = new UserRegisterInfo();
+  regInfo = std::make_unique<UserRegisterInfo>();
   initValidators();
 }
 
-RegisterDialog::~RegisterDialog() {
-  delete ui;
-  if (regInfo != nullptr) {
-    regInfo = nullptr;
-    delete regInfo;
-  }
-}
+RegisterDialog::~RegisterDialog() { delete ui; }
 
 void RegisterDialog::showTip(const QString &text, const QString &type) {
   ui->err_label->setText(text);
@@ -46,56 +40,49 @@ void RegisterDialog::reset() {
 }
 
 void RegisterDialog::initValidators() {
-  // bool email_valid = false;
-  // bool pwd_valid = false;
-  // bool confimr_valid = false;
-  // bool code_valid = false;
   connect(ui->email_edit, &QLineEdit::textChanged, this,
           [&, this](const QString &text) {
             if (text.isEmpty()) {
+              email_valid = false;
               showTip("邮箱不能为空", "warning");
             } else if (!emailRegex.match(text).hasMatch()) {
+              email_valid = false;
               showTip("邮箱格式错误", "warning");
             } else {
               email_valid = true;
               showTip("邮箱格式正确", "success");
             }
             regInfo->_email = text;
-            regValid = email_valid && pwd_valid && confimr_valid;
-            if (regValid) {
-              emit reg_valid_signal();
-            }
+            isRegValidSignal();
           });
 
   connect(ui->pwd_edid, &QLineEdit::textChanged, this,
           [&, this](const QString &text) {
             if (text.length() < 8) {
+              pwd_valid = false;
               showTip("密码至少需要8位", "warning");
             } else if (!pwdRegex.match(text).hasMatch()) {
+              pwd_valid = false;
               showTip("密码必须包含字母和数字，可以包含符号", "warning");
             } else {
               pwd_valid = true;
               showTip("密码可用", "success");
             }
             regInfo->_pwd = text;
-            regValid = email_valid && pwd_valid && confimr_valid;
-            if (regValid) {
-              emit reg_valid_signal();
-            }
+
+            isRegValidSignal();
           });
 
   connect(ui->confirm_edit, &QLineEdit::textChanged, this,
           [&, this](const QString &text) {
             if (text != ui->pwd_edid->text()) {
+              confimr_valid = false;
               showTip("两次密码不一致", "error");
             } else {
               confimr_valid = true;
-              regValid = email_valid && pwd_valid && confimr_valid;
-              if (regValid) {
-                emit reg_valid_signal();
-              }
               showTip("密码一致", "success");
             }
+            isRegValidSignal();
           });
 
   connect(ui->user_edit, &QLineEdit::textChanged, this,
@@ -111,9 +98,16 @@ void RegisterDialog::initValidators() {
               code_valid = true;
             }
           });
+}
 
-  connect(this, &RegisterDialog::reg_valid_signal, this,
-          [this]() { ui->getcode_btn->setEnabled(true); });
+void RegisterDialog::isRegValidSignal() {
+  regValid = email_valid && pwd_valid && confimr_valid;
+  // 如果处于倒计时阶段，按钮仍然不可用
+  if (regValid && !isCountingDown) {
+    ui->getcode_btn->setEnabled(true);
+  } else {
+    ui->getcode_btn->setEnabled(false);
+  }
 }
 
 void RegisterDialog::on_reg_btn_clicked() {
@@ -123,32 +117,16 @@ void RegisterDialog::on_reg_btn_clicked() {
     QString pwd = regInfo->_pwd;
     QString code = regInfo->_getcode;
     QString errMsg;
-    // user name
-    if (email.isEmpty() || pwd.isEmpty()) {
-      showTip("相关信息缺失", "error");
-    }
+
     qDebug() << "the print the debug regInfo\n"
              << "user: " << user << "\n "
              << "email: " << email << "\n"
              << "pwd: " << pwd << "\n"
              << "code: " << code << "\n";
+  } else {
+    showTip("请补充相关信息", "error");
+    return;
   }
-  //   QString user = regInfo->_user;
-  //   QString email = regInfo->_email;
-  //   QString pwd = regInfo->_pwd;
-  //   QString code = regInfo->_getcode;
-  //   QString errMsg;
-  //   // user name
-  //   if (email.isEmpty() || pwd.isEmpty() || code.isEmpty()) {
-  //     showTip("相关信息缺失", "error");
-  //   }
-  //   qDebug() << "the print the debug regInfo\n"
-  //            << "user: " << user << "\n "
-  //            << "email: " << email << "\n"
-  //            << "pwd: " << pwd << "\n"
-  //            << "code: " << code << "\n";
-
-  //   if (!valid) return;  // 阻止提交
 }
 
 void RegisterDialog::on_back_btn_clicked() {
@@ -157,22 +135,30 @@ void RegisterDialog::on_back_btn_clicked() {
 }
 
 void RegisterDialog::on_getcode_btn_clicked() {
-  auto email = regInfo->_email;
-  qDebug() << "the get code btn emali is :" << email << '\n';
-  if (email.isEmpty()) {
-    showTip(QString("email is empty, please input an email"), "error");
-    return;
+  if (regValid) {
+    auto email = regInfo->_email;
+    qDebug() << "the get code btn emali is :" << email << '\n';
+    // TODO: 发起http请求，发送验证码
+
+    // 禁用按钮并开始计时
+    ui->getcode_btn->setEnabled(false);
+    int countdown = 10;
+    isCountingDown = true;
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [=]() mutable {
+      countdown--;
+      if (countdown > 0) {
+        ui->getcode_btn->setText(QString("重新获取(%1s)").arg(countdown));
+      } else {
+        timer->stop();
+        timer->deleteLater();
+        isCountingDown = false;
+        ui->getcode_btn->setText("获取");
+        if (regValid) {
+          ui->getcode_btn->setEnabled(true);
+        }
+      }
+    });
+    timer->start(1000);
   }
-  // QRegularExpression regex(R"((\w+)(\.|_)?(\w*)@(\w+)(\.(\w+))+)");
-  // bool match = regex.match(email).hasMatch();
-  // if (match) {
-  // } else {
-  //   showTip(QString("email format error, please reinput"), "error");
-  // }
-
-  // 发送请求 get code
-  // QTimer::singleShot(60000, [this]() {});
-  // ui->getcode_btn->setEnabled(true);
-
-  //
 }

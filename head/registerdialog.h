@@ -22,6 +22,7 @@ class RegisterDialog : public QDialog {
   void showTip(const QString &text, const QString &type);
   void reset();
   void initValidators();
+  void isRegValidSignal();
 
  private slots:
   void on_reg_btn_clicked();
@@ -33,15 +34,16 @@ class RegisterDialog : public QDialog {
  private:
   Ui::RegisterDialog *ui;
   QTimer *tipTimer;
-  UserRegisterInfo *regInfo;
+  std::unique_ptr<UserRegisterInfo> regInfo;
   bool regValid = false; 
   bool email_valid = false;
   bool pwd_valid = false;
   bool confimr_valid = false;
   bool code_valid = false;
+  bool isCountingDown = false;
  signals:
   void back_signal();
-  void reg_valid_signal();
+  void get_code_signal();
 };
 
 #endif  // REGISTERDIALOG_H
