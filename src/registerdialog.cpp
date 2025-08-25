@@ -14,6 +14,7 @@ RegisterDialog::RegisterDialog(QWidget *parent)
   ui->getcode_btn->setEnabled(false);
   regInfo = std::make_unique<UserRegisterInfo>();
   initValidators();
+  connect(HttpMgr::GetInstance().get(),&HttpMgr::register_finish_signal, )
 }
 
 RegisterDialog::~RegisterDialog() { delete ui; }
@@ -109,6 +110,18 @@ void RegisterDialog::isRegValidSignal() {
     ui->getcode_btn->setEnabled(false);
   }
 }
+void RegisterDialog::initHttpHandlers() {
+  _handlers.insert(ReqId::ID_GET_VARIFY_CODE, [this](QJsonObject jsonObj) {
+    int error = jsonObj["error"].toInt();
+    if (error != ErrorCodes::SUCCESS) {
+      showTip("参数错误", "error");
+      return;
+    }
+    auto email = jsonObj["email"].toString();
+    showTip("验证码已发送到邮箱", "success");
+    qDebug() <<"email is " << email;
+  });
+}
 
 void RegisterDialog::on_reg_btn_clicked() {
   if (regValid && code_valid) {
@@ -161,4 +174,22 @@ void RegisterDialog::on_getcode_btn_clicked() {
     });
     timer->start(1000);
   }
+}
+void RegisterDialog::register_mod_finish_slot(ReqId id, QString res,
+                                              ErrorCodes err) {
+  if (err != ErrorCodes::SUCCESS) {
+    showTip("网络请求错误", "error");
+    return;
+  }
+
+  QJsonDocument jsonDoc = QJsonDocument::fromJson(res.toUtf8());
+
+  if (jsonDoc.isNull() ||!jsonDoc.isObject()) {
+    showTip("json解析错误", "error");
+    return;
+  }
+
+  QJsonObject jsonObject = jsonDoc.object();
+  _handlers[id](jsonObject);
+  return;
 }

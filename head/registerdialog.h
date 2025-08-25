@@ -5,8 +5,10 @@
 #include <QRegularExpression>
 #include <QTimer>
 #include <memory>
+#include <QMap>
 
 #include "global.h"
+#include "httpmgr.h"
 namespace Ui {
 class RegisterDialog;
 }
@@ -23,6 +25,7 @@ class RegisterDialog : public QDialog {
   void reset();
   void initValidators();
   void isRegValidSignal();
+  void initHttpHandlers();
 
  private slots:
   void on_reg_btn_clicked();
@@ -30,6 +33,8 @@ class RegisterDialog : public QDialog {
   void on_back_btn_clicked();
 
   void on_getcode_btn_clicked();
+
+  void register_mod_finish_slot(ReqId id, QString res, ErrorCodes err);
 
  private:
   Ui::RegisterDialog *ui;
@@ -41,6 +46,7 @@ class RegisterDialog : public QDialog {
   bool confimr_valid = false;
   bool code_valid = false;
   bool isCountingDown = false;
+  QMap<ReqId, std::function<void(const QJsonObject &)>> _handlers;
  signals:
   void back_signal();
   void get_code_signal();
