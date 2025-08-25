@@ -28,8 +28,21 @@
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <widget class="QToolButton" name="back_btn">
+     <property name="layoutDirection">
+      <enum>Qt::LayoutDirection::LeftToRight</enum>
+     </property>
      <property name="text">
       <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="err_label">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
     </widget>
    </item>
@@ -45,16 +58,6 @@
       </size>
      </property>
     </spacer>
-   </item>
-   <item>
-    <widget class="QLabel" name="err_label">
-     <property name="text">
-      <string>TextLabel</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignCenter</set>
-     </property>
-    </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -73,12 +76,51 @@
         </size>
        </property>
        <property name="text">
-        <string>用户：</string>
+        <string>昵称：</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QLineEdit" name="user_edit">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLabel" name="email_label">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>邮箱：</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="email_edit">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -174,45 +216,6 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <item>
-      <widget class="QLabel" name="email_label">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>邮箱：</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="email_edit">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>30</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
       <widget class="QLabel" name="code_label">
@@ -280,28 +283,6 @@
        </property>
        <property name="text">
         <string>注册</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="login_btn">
-       <property name="minimumSize">
-        <size>
-         <width>150</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>150</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="layoutDirection">
-        <enum>Qt::LayoutDirection::LeftToRight</enum>
-       </property>
-       <property name="text">
-        <string>登录</string>
        </property>
       </widget>
      </item>

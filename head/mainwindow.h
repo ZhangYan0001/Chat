@@ -1,29 +1,28 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QFile>
 #include <QMainWindow>
 #include <QStackedWidget>
-#include <QFile>
 
+#include "global.h"
 #include "logindialog.h"
 #include "registerdialog.h"
-#include "global.h"
-
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
-  class MainWindow;
+class MainWindow;
 }
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow {
   Q_OBJECT
 
-  public:
+ public:
   MainWindow(QWidget* parent = nullptr);
   ~MainWindow();
 
-  private:
+ private:
   Ui::MainWindow* ui;
   LoginDialog* _login_dlg;
   RegisterDialog* _register_dlg;
