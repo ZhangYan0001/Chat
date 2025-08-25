@@ -14,7 +14,7 @@ RegisterDialog::RegisterDialog(QWidget *parent)
   ui->getcode_btn->setEnabled(false);
   regInfo = std::make_unique<UserRegisterInfo>();
   initValidators();
-  connect(HttpMgr::GetInstance().get(),&HttpMgr::register_finish_signal, )
+  connect(HttpMgr::GetInstance().get(),&HttpMgr::register_finish_signal, this, &register_mod_finish_slot);
 }
 
 RegisterDialog::~RegisterDialog() { delete ui; }
