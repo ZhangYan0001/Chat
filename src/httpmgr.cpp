@@ -1,9 +1,11 @@
 #include "httpmgr.h"
 
 HttpMgr::HttpMgr() {
-  connect(this,&http_finish_signal, this, &http_finish_slot);
+  connect(this, &HttpMgr::http_finish_signal, this, &HttpMgr::http_finish_slot);
 }
+
 HttpMgr::~HttpMgr() {}
+
 void HttpMgr::PostHttpReq(QUrl url, QJsonObject json, ReqId req_id,
                           Modules mod) {
   QByteArray data = QJsonDocument(json).toJson();
@@ -33,6 +35,7 @@ void HttpMgr::PostHttpReq(QUrl url, QJsonObject json, ReqId req_id,
         return;
       });
 }
+
 void HttpMgr::http_finish_slot(ReqId id, QString res, ErrorCodes err,
                                Modules mod) {
   if (mod == Modules::REGISTERMOD) {

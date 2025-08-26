@@ -14,7 +14,9 @@ RegisterDialog::RegisterDialog(QWidget *parent)
   ui->getcode_btn->setEnabled(false);
   regInfo = std::make_unique<UserRegisterInfo>();
   initValidators();
-  connect(HttpMgr::GetInstance().get(),&HttpMgr::register_finish_signal, this, &register_mod_finish_slot);
+  reg_http_mgr = HttpMgr::GetInstance();
+  connect(HttpMgr::GetInstance().get(), &HttpMgr::register_finish_signal, this,
+          &RegisterDialog::register_mod_finish_slot);
 }
 
 RegisterDialog::~RegisterDialog() { delete ui; }
@@ -119,7 +121,7 @@ void RegisterDialog::initHttpHandlers() {
     }
     auto email = jsonObj["email"].toString();
     showTip("验证码已发送到邮箱", "success");
-    qDebug() <<"email is " << email;
+    qDebug() << "email is " << email;
   });
 }
 
@@ -152,6 +154,11 @@ void RegisterDialog::on_getcode_btn_clicked() {
     auto email = regInfo->_email;
     qDebug() << "the get code btn emali is :" << email << '\n';
     // TODO: 发起http请求，发送验证码
+    QString res;
+    QJsonObject json_obj;
+    json_obj["email"] = email;
+    HttpMgr::GetInstance()->PostHttpReq(QUrl("http://localhost:8080/"), json_obj, ReqId::ID_GET_VARIFY_CODE, Modules::REGISTERMOD);
+    // 请求结束 
 
     // 禁用按钮并开始计时
     ui->getcode_btn->setEnabled(false);
@@ -184,7 +191,7 @@ void RegisterDialog::register_mod_finish_slot(ReqId id, QString res,
 
   QJsonDocument jsonDoc = QJsonDocument::fromJson(res.toUtf8());
 
-  if (jsonDoc.isNull() ||!jsonDoc.isObject()) {
+  if (jsonDoc.isNull() || !jsonDoc.isObject()) {
     showTip("json解析错误", "error");
     return;
   }

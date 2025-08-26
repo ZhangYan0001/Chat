@@ -47,6 +47,7 @@ class RegisterDialog : public QDialog {
   bool code_valid = false;
   bool isCountingDown = false;
   QMap<ReqId, std::function<void(const QJsonObject &)>> _handlers;
+  std::shared_ptr<HttpMgr> reg_http_mgr; 
  signals:
   void back_signal();
   void get_code_signal();

@@ -13,7 +13,7 @@ set(CMAKE_PREFIX_PATH C:\\Qt\\6.9.1\\mingw_64)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets )
 #set(CMAKE_PREFIX_PATH "D:/Qt/6.9.0/mingw_64")
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network)
 include_directories(${PROJECT_SOURCE_DIR}/head)
 
 set(PROJECT_SOURCES
@@ -54,7 +54,10 @@ else()
     endif()
 endif()
 
-target_link_libraries(FYChat PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(FYChat PRIVATE 
+Qt${QT_VERSION_MAJOR}::Widgets 
+Qt${QT_VERSION_MAJOR}::Network
+)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
