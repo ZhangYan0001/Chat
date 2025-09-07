@@ -85,6 +85,11 @@ def verify_code():
   else:
     return jsonify({"error": "验证码错误"}), 400
 
+# test code
+@app.route("/")
+def hello():
+  return render_template_string("hello Qt")
+
 
 if __name__ == "__main__":
   app.run(debug=True, port=5000)
