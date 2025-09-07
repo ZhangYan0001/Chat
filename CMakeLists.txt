@@ -8,10 +8,10 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_PREFIX_PATH C:\\Qt\\6.9.1\\mingw_64)
+# set(CMAKE_PREFIX_PATH C:\\Qt\\6.9.1\\mingw_64)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets )
-#set(CMAKE_PREFIX_PATH "D:/Qt/6.9.0/mingw_64")
+set(CMAKE_PREFIX_PATH "D:/Qt/6.9.0/mingw_64")
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network)
 include_directories(${PROJECT_SOURCE_DIR}/head)
@@ -35,6 +35,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         src/global.cpp
         src/mainwindow.ui
         files.qrc
+        py_script/verify_code.py
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Chat APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

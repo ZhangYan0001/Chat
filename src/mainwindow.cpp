@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget* parent)
   ui->setupUi(this);
   _login_dlg = new LoginDialog(this);
   _register_dlg = new RegisterDialog(this);
-
+  this->setWindowTitle("Chat");
   _stacked_widget = new QStackedWidget(this);
   _stacked_widget->addWidget(_login_dlg);
   _stacked_widget->addWidget(_register_dlg);
