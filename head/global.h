@@ -18,6 +18,8 @@ enum ErrorCodes {
   SUCCESS = 0,
   ERROR_JSON = 1,
   ERROR_NETWORK = 2,
+  ERROR_VERIFY_CODE = 3,
+  ERROR_NULL = 4,
 };
 
 enum Modules {

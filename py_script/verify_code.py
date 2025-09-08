@@ -6,6 +6,8 @@ from flask import Flask, request, jsonify, render_template_string
 from flask_cors import CORS
 from email.mime.text import MIMEText
 from email.header import Header
+import signal
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -59,9 +61,9 @@ def get_code():
   codes[email] = (code, expire_time)
   print("the code is ", code)
   if send_email(email, code):
-    return jsonify({"message": "验证码已发送"})
+    return jsonify({"message": "验证码已发送", "email": email})
   else:
-    return jsonify({"error": "邮件发送失败"}), 500
+    return jsonify({"error": "邮件发送失败", "email": email}), 500
 
 
 # 校验验证码接口
@@ -78,17 +80,28 @@ def verify_code():
 
   saved_code, expire_time = codes[email]
   if time.time() > expire_time:
-    return jsonify({"error": "验证码已过期"}), 400
+    return jsonify({"error": 3, "email": email}), 400
 
   if code == saved_code:
-    return jsonify({"message": "验证成功"})
+    return jsonify({"message": "验证成功", "email": email})
   else:
-    return jsonify({"error": "验证码错误"}), 400
+    return jsonify({"error": 3, "email": email})
+
 
 # test code
 @app.route("/")
 def hello():
   return render_template_string("hello Qt")
+
+
+@app.route("/shutdown")
+def shutdown():
+    func = request.environ.get("werkzeug.server.shutdown")
+    if func:
+        func()
+    else:
+        os.kill(os.getpid(), signal.SIGTERM)  # 兜底
+    return "Server shutting down..."
 
 
 if __name__ == "__main__":

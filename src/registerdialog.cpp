@@ -14,6 +14,7 @@ RegisterDialog::RegisterDialog(QWidget *parent)
   ui->getcode_btn->setEnabled(false);
   regInfo = std::make_unique<UserRegisterInfo>();
   initValidators();
+  initHttpHandlers();
   reg_http_mgr = HttpMgr::GetInstance();
   connect(HttpMgr::GetInstance().get(), &HttpMgr::register_finish_signal, this,
           &RegisterDialog::register_mod_finish_slot);
@@ -115,6 +116,7 @@ void RegisterDialog::isRegValidSignal() {
 void RegisterDialog::initHttpHandlers() {
   _handlers.insert(ReqId::ID_GET_VARIFY_CODE, [this](QJsonObject jsonObj) {
     int error = jsonObj["error"].toInt();
+    qDebug() << "handler error code >>---" << error << "---<<";
     if (error != ErrorCodes::SUCCESS) {
       showTip("参数错误", "error");
       return;
@@ -122,6 +124,21 @@ void RegisterDialog::initHttpHandlers() {
     auto email = jsonObj["email"].toString();
     showTip("验证码已发送到邮箱", "success");
     qDebug() << "email is " << email;
+  });
+
+  _handlers.insert(ReqId::ID_REG_USER, [this](QJsonObject jsonObj) {
+    int error = jsonObj["error"].toInt();
+    qDebug() << "handler error code >>---" << error << "---<<";
+    if (error == ErrorCodes::ERROR_VERIFY_CODE) {
+      showTip("验证码错误", "error");
+      return;
+    }
+    if (error == ErrorCodes::ERROR_NETWORK) {
+      showTip("网络错误", "error");
+      return;
+    }
+    showTip("注册成功！", "success");
+    qDebug() << "user registered: " << jsonObj["email"].toString();
   });
 }
 
@@ -138,6 +155,12 @@ void RegisterDialog::on_reg_btn_clicked() {
              << "email: " << email << "\n"
              << "pwd: " << pwd << "\n"
              << "code: " << code << "\n";
+    QJsonObject json_obj;
+    json_obj["email"] = email;
+    json_obj["code"] = code;
+    HttpMgr::GetInstance()->PostHttpReq(
+        QUrl("http://localhost:5000/verify_code"), json_obj, ReqId::ID_REG_USER,
+        Modules::REGISTERMOD);
   } else {
     showTip("请补充相关信息", "error");
     return;
@@ -157,8 +180,10 @@ void RegisterDialog::on_getcode_btn_clicked() {
     QString res;
     QJsonObject json_obj;
     json_obj["email"] = email;
-    HttpMgr::GetInstance()->PostHttpReq(QUrl("http://localhost:8080/"), json_obj, ReqId::ID_GET_VARIFY_CODE, Modules::REGISTERMOD);
-    // 请求结束 
+    HttpMgr::GetInstance()->PostHttpReq(QUrl("http://localhost:5000/get_code"),
+                                        json_obj, ReqId::ID_GET_VARIFY_CODE,
+                                        Modules::REGISTERMOD);
+    // 请求结束
 
     // 禁用按钮并开始计时
     ui->getcode_btn->setEnabled(false);
@@ -184,8 +209,15 @@ void RegisterDialog::on_getcode_btn_clicked() {
 }
 void RegisterDialog::register_mod_finish_slot(ReqId id, QString res,
                                               ErrorCodes err) {
-  if (err != ErrorCodes::SUCCESS) {
+  qDebug() << "the req id >>--" << id << "---<<"
+           << "finish slot err >>---" << err << "---<<";
+  if (err == ErrorCodes::ERROR_NETWORK) {
     showTip("网络请求错误", "error");
+    return;
+  }
+
+  if (err == ErrorCodes::ERROR_VERIFY_CODE) {
+    showTip("验证码错误", "error");
     return;
   }
 

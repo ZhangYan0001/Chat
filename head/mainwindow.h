@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QCloseEvent>
 #include <QFile>
 #include <QMainWindow>
 #include <QStackedWidget>
@@ -22,10 +23,15 @@ class MainWindow : public QMainWindow {
   MainWindow(QWidget* parent = nullptr);
   ~MainWindow();
 
+ protected:
+  void closeEvent(QCloseEvent* event) override;
+
  private:
   Ui::MainWindow* ui;
   LoginDialog* _login_dlg;
   RegisterDialog* _register_dlg;
   QStackedWidget* _stacked_widget;
+  signals:
+  void signal_py_kill();
 };
 #endif  // MAINWINDOW_H
