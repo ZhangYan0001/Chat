@@ -29,6 +29,7 @@ class HttpMgr : public QObject,
  signals:
   void http_finish_signal(ReqId id, QString res, ErrorCodes err, Modules mod);
   void register_finish_signal(ReqId id, QString res, ErrorCodes err);
+  void login_finish_signal(ReqId id, QString res, ErrorCodes err);
 };
 
 #endif  // HTTPMGR_H

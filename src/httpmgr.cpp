@@ -41,4 +41,7 @@ void HttpMgr::http_finish_slot(ReqId id, QString res, ErrorCodes err,
   if (mod == Modules::REGISTERMOD) {
     emit register_finish_signal(id, res, err);
   }
+  if (mod == Modules::LOGIN){
+    emit login_finish_signal(id, res, err);
+  }
 }

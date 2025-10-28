@@ -12,6 +12,7 @@
 enum ReqId {
   ID_GET_VARIFY_CODE = 1001,
   ID_REG_USER = 1002,
+  ID_LOGIN_USER = 2001,
 };
 
 enum ErrorCodes {
@@ -24,6 +25,7 @@ enum ErrorCodes {
 
 enum Modules {
   REGISTERMOD = 0,
+  LOGIN = 1,
 };
 
 struct UserLoginInfo {

@@ -17,10 +17,10 @@ codes = {}
 
 
 # 邮件配置py
-SMTP_SERVER = "smtp.163.com"  # SMTP服务器地址
+SMTP_SERVER = "smtp.vip.163.com"  # SMTP服务器地址
 SMTP_PORT = 465  # TLS端口 (常用: 587/465)
-SMTP_USER = "zyreddie@163.com"
-SMTP_PASS = "BTuauYEtCubgpV2G"
+SMTP_USER = "yanzhang.hist@vip.163.com"
+SMTP_PASS = "ULTBf32tkP99jCpT"
 
 
 # 生成随机验证码

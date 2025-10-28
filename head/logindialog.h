@@ -8,6 +8,7 @@
 #include <QMovie>
 
 #include "global.h"
+#include "httpmgr.h"
 
 namespace Ui {
 class LoginDialog;
@@ -18,6 +19,7 @@ class LoginDialog : public QDialog {
 
  public:
   explicit LoginDialog(QWidget *parent = nullptr);
+  void restoreLoginBtn();
   ~LoginDialog();
  signals:
   void login_reg_signal();
@@ -25,6 +27,8 @@ class LoginDialog : public QDialog {
   void on_login_btn_clicked();
 
   void on_forgetpwd_label_linkActivated(const QString &link);
+
+  void login_mod_finish_slot(ReqId id, QString res, ErrorCodes err);
 
  private:
   Ui::LoginDialog *ui;

@@ -24,7 +24,7 @@ class MainWindow : public QMainWindow {
   ~MainWindow();
 
  protected:
-  void closeEvent(QCloseEvent* event) override;
+  // void closeEvent(QCloseEvent* event) override;
 
  private:
   Ui::MainWindow* ui;
@@ -32,6 +32,6 @@ class MainWindow : public QMainWindow {
   RegisterDialog* _register_dlg;
   QStackedWidget* _stacked_widget;
   signals:
-  void signal_py_kill();
+  // void signal_py_kill();
 };
 #endif  // MAINWINDOW_H

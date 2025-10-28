@@ -15,7 +15,6 @@ RegisterDialog::RegisterDialog(QWidget *parent)
   regInfo = std::make_unique<UserRegisterInfo>();
   initValidators();
   initHttpHandlers();
-  reg_http_mgr = HttpMgr::GetInstance();
   connect(HttpMgr::GetInstance().get(), &HttpMgr::register_finish_signal, this,
           &RegisterDialog::register_mod_finish_slot);
 }
@@ -159,7 +158,7 @@ void RegisterDialog::on_reg_btn_clicked() {
     json_obj["email"] = email;
     json_obj["code"] = code;
     HttpMgr::GetInstance()->PostHttpReq(
-        QUrl("http://localhost:5000/verify_code"), json_obj, ReqId::ID_REG_USER,
+        QUrl("http://localhost:8080/api/email/verify-code"), json_obj, ReqId::ID_REG_USER,
         Modules::REGISTERMOD);
   } else {
     showTip("请补充相关信息", "error");
@@ -180,7 +179,7 @@ void RegisterDialog::on_getcode_btn_clicked() {
     QString res;
     QJsonObject json_obj;
     json_obj["email"] = email;
-    HttpMgr::GetInstance()->PostHttpReq(QUrl("http://localhost:5000/get_code"),
+    HttpMgr::GetInstance()->PostHttpReq(QUrl("http://localhost:8080/api/email/send-code"),
                                         json_obj, ReqId::ID_GET_VARIFY_CODE,
                                         Modules::REGISTERMOD);
     // 请求结束
