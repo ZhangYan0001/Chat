@@ -23,6 +23,7 @@ class LoginDialog : public QDialog {
   ~LoginDialog();
  signals:
   void login_reg_signal();
+  void login_success_signal(QString email, QString token);
  private slots:
   void on_login_btn_clicked();
 

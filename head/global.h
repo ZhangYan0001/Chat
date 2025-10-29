@@ -21,6 +21,7 @@ enum ErrorCodes {
   ERROR_NETWORK = 2,
   ERROR_VERIFY_CODE = 3,
   ERROR_NULL = 4,
+  ERROR_HTTP = 5,
 };
 
 enum Modules {

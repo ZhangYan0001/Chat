@@ -20,6 +20,9 @@ void HttpMgr::PostHttpReq(QUrl url, QJsonObject json, ReqId req_id,
 
   QObject::connect(
       reply, &QNetworkReply::finished, [reply, self, req_id, mod]() {
+        int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        qDebug() << "the status code is >> ---" << statusCode << "---<<";
+        QString res = reply->readAll();
         if (reply->error() != QNetworkReply::NoError) {
           qDebug() << "reply error>>---"<< reply->errorString()<<"---<<";
           emit self->http_finish_signal(req_id, "", ErrorCodes::ERROR_NETWORK,
@@ -28,7 +31,12 @@ void HttpMgr::PostHttpReq(QUrl url, QJsonObject json, ReqId req_id,
           return;
         }
 
-        QString res = reply->readAll();
+        if (statusCode !=200) {
+          qDebug() << "HTTP error code:" << statusCode;
+          emit self->http_finish_signal(req_id, res, ErrorCodes::ERROR_HTTP, mod);
+          reply->deleteLater();
+          return;
+        }
         qDebug() << "reply is>>---"<<res.toStdString() << "---<<";
         emit self->http_finish_signal(req_id, res, ErrorCodes::SUCCESS, mod);
         reply->deleteLater();

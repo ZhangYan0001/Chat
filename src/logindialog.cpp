@@ -101,9 +101,9 @@ void LoginDialog::login_mod_finish_slot(ReqId id, QString res, ErrorCodes err) {
     QString username = obj.value("username").toString();
     QMessageBox::information(this, "登录成功",
                              QString("欢迎回来，%1！").arg(username));
-    // emit login_success_signal(loginInfo->_email,
-    // obj.value("token").toString());
-    this->accept();
+    emit login_success_signal(loginInfo->_email,
+    obj.value("token").toString());
+    // this->accept();
   } else {
     QMessageBox::warning(this, "登录失败",
                          msg.isEmpty() ? "账号或密码错误" : msg);
