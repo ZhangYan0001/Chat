@@ -2,7 +2,7 @@
 
 #include "ui_registerdialog.h"
 
-RegisterDialog::RegisterDialog(QWidget *parent)
+RegisterDialog::RegisterDialog(QWidget* parent)
     : QDialog(parent), ui(new Ui::RegisterDialog) {
   loadStyleSheet(":/style/reg_dlg_style.qss");
   ui->setupUi(this);
@@ -21,7 +21,7 @@ RegisterDialog::RegisterDialog(QWidget *parent)
 
 RegisterDialog::~RegisterDialog() { delete ui; }
 
-void RegisterDialog::showTip(const QString &text, const QString &type) {
+void RegisterDialog::showTip(const QString& text, const QString& type) {
   ui->err_label->setText(text);
   ui->err_label->setProperty("tipType", type);
   repolish(ui->err_label);
@@ -44,7 +44,7 @@ void RegisterDialog::reset() {
 
 void RegisterDialog::initValidators() {
   connect(ui->email_edit, &QLineEdit::textChanged, this,
-          [&, this](const QString &text) {
+          [&, this](const QString& text) {
             if (text.isEmpty()) {
               email_valid = false;
               showTip("邮箱不能为空", "warning");
@@ -60,7 +60,7 @@ void RegisterDialog::initValidators() {
           });
 
   connect(ui->pwd_edid, &QLineEdit::textChanged, this,
-          [&, this](const QString &text) {
+          [&, this](const QString& text) {
             if (text.length() < 8) {
               pwd_valid = false;
               showTip("密码至少需要8位", "warning");
@@ -77,7 +77,7 @@ void RegisterDialog::initValidators() {
           });
 
   connect(ui->confirm_edit, &QLineEdit::textChanged, this,
-          [&, this](const QString &text) {
+          [&, this](const QString& text) {
             if (text != ui->pwd_edid->text()) {
               confimr_valid = false;
               showTip("两次密码不一致", "error");
@@ -89,13 +89,13 @@ void RegisterDialog::initValidators() {
           });
 
   connect(ui->user_edit, &QLineEdit::textChanged, this,
-          [this](const QString &text) {
+          [this](const QString& text) {
             if (!text.isEmpty()) {
               regInfo->_user = text;
             }
           });
   connect(ui->code_edit, &QLineEdit::textChanged, this,
-          [&, this](const QString &text) {
+          [&, this](const QString& text) {
             if (!text.isEmpty()) {
               regInfo->_getcode = text;
               code_valid = true;
@@ -157,9 +157,11 @@ void RegisterDialog::on_reg_btn_clicked() {
     QJsonObject json_obj;
     json_obj["email"] = email;
     json_obj["code"] = code;
+    json_obj["username"] = user;
+    json_obj["password"] = pwd;
     HttpMgr::GetInstance()->PostHttpReq(
-        QUrl("http://localhost:8080/api/email/verify-code"), json_obj, ReqId::ID_REG_USER,
-        Modules::REGISTERMOD);
+        QUrl("http://localhost:8080/api/login/register"), json_obj,
+        ReqId::ID_REG_USER, Modules::REGISTERMOD);
   } else {
     showTip("请补充相关信息", "error");
     return;
@@ -179,16 +181,16 @@ void RegisterDialog::on_getcode_btn_clicked() {
     QString res;
     QJsonObject json_obj;
     json_obj["email"] = email;
-    HttpMgr::GetInstance()->PostHttpReq(QUrl("http://localhost:8080/api/email/send-code"),
-                                        json_obj, ReqId::ID_GET_VARIFY_CODE,
-                                        Modules::REGISTERMOD);
+    HttpMgr::GetInstance()->PostHttpReq(
+        QUrl("http://localhost:8080/api/email/send-code"), json_obj,
+        ReqId::ID_GET_VARIFY_CODE, Modules::REGISTERMOD);
     // 请求结束
 
     // 禁用按钮并开始计时
     ui->getcode_btn->setEnabled(false);
     int countdown = 10;
     isCountingDown = true;
-    QTimer *timer = new QTimer(this);
+    QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [=]() mutable {
       countdown--;
       if (countdown > 0) {

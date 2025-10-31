@@ -27,9 +27,18 @@ class HttpMgr : public QObject,
   HttpMgr();
   QNetworkAccessManager _manager;
  signals:
-  void http_finish_signal(ReqId id, QString res, ErrorCodes err, Modules mod);
+  // void http_finish_signal(ReqId id, QString res, ErrorCodes err, Modules mod);
+  void http_finish_signal(ReqId id, HttpResponse rep, Modules mod);
   void register_finish_signal(ReqId id, QString res, ErrorCodes err);
   void login_finish_signal(ReqId id, QString res, ErrorCodes err);
+};
+
+struct HttpResponse{
+  int httpStatus;
+  int code;
+  QString msg;
+  QJsonObject data;
+  ErrorCodes errorCode;
 };
 
 #endif  // HTTPMGR_H

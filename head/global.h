@@ -22,6 +22,9 @@ enum ErrorCodes {
   ERROR_VERIFY_CODE = 3,
   ERROR_NULL = 4,
   ERROR_HTTP = 5,
+  ERROR_JSON_PARSE = 6,
+  ERROR_BACKEND = 7,
+  ERROR_JSON_FORMAT= 8,
 };
 
 enum Modules {
