@@ -73,43 +73,51 @@ void LoginDialog::on_forgetpwd_label_linkActivated(const QString& link) {
   }
 }
 
-void LoginDialog::login_mod_finish_slot(ReqId id, QString res, ErrorCodes err) {
-  qDebug() << "the req id >>--" << id << "---<<"
-           << "finish slot err >>---" << err << "---<<";
-  if (id != ReqId::ID_LOGIN_USER) return;  // 只处理登录请求
+void LoginDialog::login_mod_finish_slot(ReqId id, HttpResponse rep,
+                                        Modules mod) {
+  Q_UNUSED(id);
+  Q_UNUSED(mod);
 
-  if (err == ErrorCodes::ERROR_NETWORK) {
-    QMessageBox::warning(this, "错误", "网络连接失败，请检查网络。");
-    restoreLoginBtn();
+  // 1️⃣ 检查网络层错误
+  if (rep.errorCode != ErrorCodes::SUCCESS) {
+    QString errMsg;
+    switch (rep.errorCode) {
+      case ErrorCodes::ERROR_NETWORK:
+        errMsg = "网络连接失败，请检查网络。";
+        break;
+      case ErrorCodes::ERROR_HTTP:
+        errMsg = QString("HTTP错误：%1").arg(rep.httpStatus);
+        break;
+      case ErrorCodes::ERROR_JSON_PARSE:
+        errMsg = "响应数据解析失败。";
+        break;
+      default:
+        errMsg = "未知错误，请稍后重试。";
+        break;
+    }
+    QMessageBox::warning(this, "登录失败", errMsg);
     return;
   }
 
-  QJsonParseError jsonError;
-  QJsonDocument jsonDoc = QJsonDocument::fromJson(res.toUtf8(), &jsonError);
-
-  if (jsonError.error != QJsonParseError::NoError || !jsonDoc.isObject()) {
-    QMessageBox::warning(this, "错误", "服务器返回数据格式错误。");
-    restoreLoginBtn();
+  if (rep.code != 0) {
+    QMessageBox::warning(this, "登陆失败", rep.msg.isEmpty() ? "服务器返回错误":rep.msg);
     return;
   }
 
-  QJsonObject obj = jsonDoc.object();
-  int code = obj.value("code").toInt(-1);
-  QString msg = obj.value("msg").toString();
+  QJsonObject data = rep.data;
+  QString username = data.value("username").toString();
+  QString email = data.value("email").toString();
 
-  if (code == 200) {
-    QString username = obj.value("username").toString();
-    QMessageBox::information(this, "登录成功",
-                             QString("欢迎回来，%1！").arg(username));
-    emit login_success_signal(loginInfo->_email,
-    obj.value("token").toString());
-    // this->accept();
-  } else {
-    QMessageBox::warning(this, "登录失败",
-                         msg.isEmpty() ? "账号或密码错误" : msg);
-    restoreLoginBtn();
+  if (username.isEmpty()) {
+    QMessageBox::warning(this, "登陆失败", "返回数据不完整");
+    return;
   }
+  qDebug() << "登陆成功 用户" << username << "邮箱 ：" <<  email;
+  QMessageBox::information(this, "登陆成功", QString("欢迎回来,%1!").arg(username));
+
+
 }
+
 void LoginDialog::restoreLoginBtn() {
   loadingMovie->stop();
   ui->login_btn->setIcon(QIcon());

@@ -208,28 +208,43 @@ void RegisterDialog::on_getcode_btn_clicked() {
     timer->start(1000);
   }
 }
-void RegisterDialog::register_mod_finish_slot(ReqId id, QString res,
-                                              ErrorCodes err) {
-  qDebug() << "the req id >>--" << id << "---<<"
-           << "finish slot err >>---" << err << "---<<";
-  if (err == ErrorCodes::ERROR_NETWORK) {
-    showTip("网络请求错误", "error");
+
+void RegisterDialog::register_mod_finish_slot(ReqId id, HttpResponse rep,
+                                              Modules mod) {
+  Q_UNUSED(id);
+  Q_UNUSED(mod);
+  if (rep.errorCode != ErrorCodes::SUCCESS) {
+    QString errMsg;
+    switch (rep.errorCode) {
+      case ErrorCodes::ERROR_NETWORK:
+        errMsg = "网络连接失败，请检查网络。";
+        break;
+      case ErrorCodes::ERROR_HTTP:
+        errMsg = QString("HTTP错误：%1").arg(rep.httpStatus);
+        break;
+      case ErrorCodes::ERROR_JSON_PARSE:
+        errMsg = "响应数据解析失败。";
+        break;
+      default:
+        errMsg = "未知错误，请稍后重试。";
+        break;
+    }
+    showTip(errMsg, "error");
     return;
   }
+  if (id == ReqId::ID_REG_USER) {
+    // 3️⃣ 注册成功
+    QString username = rep.data.value("username").toString();
+    QString email = rep.data.value("email").toString();
 
-  if (err == ErrorCodes::ERROR_VERIFY_CODE) {
-    showTip("验证码错误", "error");
-    return;
+    QString successMsg =
+        QString("注册成功！\n\n用户名：%1\n邮箱：%2").arg(username).arg(email);
+
+    showTip("注册成功", "success");
+    qDebug() << "Register success for user:" << username << "(" << email << ")";
   }
-
-  QJsonDocument jsonDoc = QJsonDocument::fromJson(res.toUtf8());
-
-  if (jsonDoc.isNull() || !jsonDoc.isObject()) {
-    showTip("json解析错误", "error");
-    return;
+  if (id == ReqId::ID_GET_VARIFY_CODE) {
+    QString email = rep.data.value("email").toString();
+    showTip(QString("已发送到 %1,注意查收！").arg(email), "success");
   }
-
-  QJsonObject jsonObject = jsonDoc.object();
-  _handlers[id](jsonObject);
-  return;
 }

@@ -29,7 +29,8 @@ class LoginDialog : public QDialog {
 
   void on_forgetpwd_label_linkActivated(const QString &link);
 
-  void login_mod_finish_slot(ReqId id, QString res, ErrorCodes err);
+  // void login_mod_finish_slot(ReqId id, QString res, ErrorCodes err);
+  void login_mod_finish_slot(ReqId id, HttpResponse rep, Modules mod);
 
  private:
   Ui::LoginDialog *ui;

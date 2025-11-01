@@ -35,7 +35,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         src/global.cpp
         src/mainwindow.ui
         files.qrc
-        py_script/verify_code.py
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Chat APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

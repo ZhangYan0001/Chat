@@ -34,7 +34,8 @@ class RegisterDialog : public QDialog {
 
   void on_getcode_btn_clicked();
 
-  void register_mod_finish_slot(ReqId id, QString res, ErrorCodes err);
+  // void register_mod_finish_slot(ReqId id, QString res, ErrorCodes err);
+  void register_mod_finish_slot(ReqId id, HttpResponse rep, Modules mod);
 
  private:
   Ui::RegisterDialog *ui;

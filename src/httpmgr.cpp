@@ -96,12 +96,12 @@ void HttpMgr::PostHttpReq(QUrl url, QJsonObject json, ReqId req_id,
 
         if (doc.isObject()) {
           QJsonObject obj = doc.object();
-          response.code= obj.value("code").toInt(-1);
-          response.msg= obj.value("message").toString();
+          response.code = obj.value("code").toInt(-1);
+          response.msg = obj.value("message").toString();
           response.data = obj.value("data").toObject();
 
           // 4️⃣ 后端业务码检查
-          if (response.code!= 0) {
+          if (response.code != 0) {
             response.errorCode = ErrorCodes::ERROR_BACKEND;
           }
         } else {
@@ -115,12 +115,11 @@ void HttpMgr::PostHttpReq(QUrl url, QJsonObject json, ReqId req_id,
       });
 }
 
-void HttpMgr::http_finish_slot(ReqId id, QString res, ErrorCodes err,
-                               Modules mod) {
+void HttpMgr::http_finish_slot(ReqId id, HttpResponse rep, Modules mod) {
   if (mod == Modules::REGISTERMOD) {
-    emit register_finish_signal(id, res, err);
+    emit register_finish_signal(id, rep, mod);
   }
   if (mod == Modules::LOGIN) {
-    emit login_finish_signal(id, res, err);
+    emit login_finish_signal(id, rep, mod);
   }
 }
