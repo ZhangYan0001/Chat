@@ -33,8 +33,9 @@ LoginDialog::LoginDialog(QWidget* parent)
   connect(loadingMovie, &QMovie::frameChanged, this, [=]() {
     ui->login_btn->setIcon(QIcon(loadingMovie->currentPixmap()));
   });
-  connect(HttpMgr::GetInstance().get(), &HttpMgr::login_finish_signal, this,
-          &LoginDialog::login_mod_finish_slot);
+  connect(ResponseHandler::GetInstance(),
+          &ResponseHandler::login_response_signal, this,
+          &LoginDialog::on_login_response);
 }
 
 LoginDialog::~LoginDialog() { delete ui; }
@@ -42,28 +43,26 @@ LoginDialog::~LoginDialog() { delete ui; }
 void LoginDialog::on_login_btn_clicked() {
   auto email = loginInfo->_email;
   auto pwd = loginInfo->_pwd;
-  if (!email.isEmpty() && !pwd.isEmpty()) {
-    // 设置登陆按钮loading 动画
-    ui->login_btn->setEnabled(false);
-    ui->login_btn->setText("正在登陆中...");
-    loadingMovie->start();
-    QJsonObject json_obj;
-    json_obj["email"] = email;
-    json_obj["pwd"] = pwd;
-    // TODO: 登陆请求
-    HttpMgr::GetInstance()->PostHttpReq(
-        QUrl("http://localhost:8080/api/login/login"), json_obj,
-        ReqId::ID_LOGIN_USER, Modules::LOGIN);
-    //
-    QTimer::singleShot(3000, this, [=]() {
-      loadingMovie->stop();
-      ui->login_btn->setIcon(QIcon());
-      ui->login_btn->setEnabled(true);
-      ui->login_btn->setText("登陆");
-    });
-  } else {
+
+  if (email.isEmpty() || pwd.isEmpty()) {
     QMessageBox::warning(this, "提示", "请正确输入邮箱或密码");
+    return;
   }
+
+  // 禁用按钮 + 加载动画
+  ui->login_btn->setEnabled(false);
+  ui->login_btn->setText("正在登录中...");
+  ui->login_btn->setIcon(
+      QIcon(QPixmap::fromImage(loadingMovie->currentImage())));
+  loadingMovie->start();
+
+  QJsonObject json_obj;
+  json_obj["email"] = email;
+  json_obj["pwd"] = pwd;
+
+  HttpMgr::GetInstance()->PostHttpReq(
+      QUrl("http://localhost:8080/api/login/login"), json_obj,
+      ReqId::ID_LOGIN_USER, Modules::LOGIN);
 }
 
 void LoginDialog::on_forgetpwd_label_linkActivated(const QString& link) {
@@ -73,10 +72,12 @@ void LoginDialog::on_forgetpwd_label_linkActivated(const QString& link) {
   }
 }
 
-void LoginDialog::login_mod_finish_slot(ReqId id, HttpResponse rep,
-                                        Modules mod) {
-  Q_UNUSED(id);
-  Q_UNUSED(mod);
+void LoginDialog::on_login_response(const HttpResponse& rep) {
+  // 停止加载动画
+  loadingMovie->stop();
+  ui->login_btn->setIcon(QIcon());
+  ui->login_btn->setEnabled(true);
+  ui->login_btn->setText("登录");
 
   // 1️⃣ 检查网络层错误
   if (rep.errorCode != ErrorCodes::SUCCESS) {
@@ -100,7 +101,8 @@ void LoginDialog::login_mod_finish_slot(ReqId id, HttpResponse rep,
   }
 
   if (rep.code != 0) {
-    QMessageBox::warning(this, "登陆失败", rep.msg.isEmpty() ? "服务器返回错误":rep.msg);
+    QMessageBox::warning(this, "登陆失败",
+                         rep.msg.isEmpty() ? "服务器返回错误" : rep.msg);
     return;
   }
 
@@ -112,15 +114,7 @@ void LoginDialog::login_mod_finish_slot(ReqId id, HttpResponse rep,
     QMessageBox::warning(this, "登陆失败", "返回数据不完整");
     return;
   }
-  qDebug() << "登陆成功 用户" << username << "邮箱 ：" <<  email;
-  QMessageBox::information(this, "登陆成功", QString("欢迎回来,%1!").arg(username));
-
-
-}
-
-void LoginDialog::restoreLoginBtn() {
-  loadingMovie->stop();
-  ui->login_btn->setIcon(QIcon());
-  ui->login_btn->setEnabled(true);
-  ui->login_btn->setText("登录");
+  qDebug() << "登陆成功 用户" << username << "邮箱 ：" << email;
+  QMessageBox::information(this, "登陆成功",
+                           QString("欢迎回来,%1!").arg(username));
 }

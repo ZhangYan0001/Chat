@@ -25,7 +25,6 @@ class RegisterDialog : public QDialog {
   void reset();
   void initValidators();
   void isRegValidSignal();
-  void initHttpHandlers();
 
  private slots:
   void on_reg_btn_clicked();
@@ -34,8 +33,8 @@ class RegisterDialog : public QDialog {
 
   void on_getcode_btn_clicked();
 
-  // void register_mod_finish_slot(ReqId id, QString res, ErrorCodes err);
-  void register_mod_finish_slot(ReqId id, HttpResponse rep, Modules mod);
+  void register_finish_slot(const HttpResponse &rep);
+  void verify_finish_slot(const HttpResponse &rep);
 
  private:
   Ui::RegisterDialog *ui;
@@ -47,7 +46,6 @@ class RegisterDialog : public QDialog {
   bool confimr_valid = false;
   bool code_valid = false;
   bool isCountingDown = false;
-  QMap<ReqId, std::function<void(const QJsonObject &)>> _handlers;
  signals:
   void back_signal();
   void get_code_signal();

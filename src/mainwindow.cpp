@@ -24,15 +24,3 @@ MainWindow::MainWindow(QWidget* parent)
 }
 
 MainWindow::~MainWindow() { delete ui; }
-
-// void MainWindow::closeEvent(QCloseEvent* event) {
-//   QNetworkAccessManager* ncm = new QNetworkAccessManager(this);
-//   QNetworkReply* reply =
-//       ncm->get(QNetworkRequest(QUrl("http://127.0.0.1:5000/shutdown")));
-
-//   QEventLoop loop;
-//   QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
-//   loop.exec();  // 等待请求完成
-
-//   QMainWindow::closeEvent(event);
-// }

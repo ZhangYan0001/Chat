@@ -14,9 +14,12 @@ RegisterDialog::RegisterDialog(QWidget* parent)
   ui->getcode_btn->setEnabled(false);
   regInfo = std::make_unique<UserRegisterInfo>();
   initValidators();
-  initHttpHandlers();
-  connect(HttpMgr::GetInstance().get(), &HttpMgr::register_finish_signal, this,
-          &RegisterDialog::register_mod_finish_slot);
+  connect(ResponseHandler::GetInstance(),
+          &ResponseHandler::register_response_signal, this,
+          &RegisterDialog::register_finish_slot);
+  connect(ResponseHandler::GetInstance(),
+          &ResponseHandler::verify_code_response_signal, this,
+          &RegisterDialog::verify_finish_slot);
 }
 
 RegisterDialog::~RegisterDialog() { delete ui; }
@@ -112,34 +115,6 @@ void RegisterDialog::isRegValidSignal() {
     ui->getcode_btn->setEnabled(false);
   }
 }
-void RegisterDialog::initHttpHandlers() {
-  _handlers.insert(ReqId::ID_GET_VARIFY_CODE, [this](QJsonObject jsonObj) {
-    int error = jsonObj["error"].toInt();
-    qDebug() << "handler error code >>---" << error << "---<<";
-    if (error != ErrorCodes::SUCCESS) {
-      showTip("参数错误", "error");
-      return;
-    }
-    auto email = jsonObj["email"].toString();
-    showTip("验证码已发送到邮箱", "success");
-    qDebug() << "email is " << email;
-  });
-
-  _handlers.insert(ReqId::ID_REG_USER, [this](QJsonObject jsonObj) {
-    int error = jsonObj["error"].toInt();
-    qDebug() << "handler error code >>---" << error << "---<<";
-    if (error == ErrorCodes::ERROR_VERIFY_CODE) {
-      showTip("验证码错误", "error");
-      return;
-    }
-    if (error == ErrorCodes::ERROR_NETWORK) {
-      showTip("网络错误", "error");
-      return;
-    }
-    showTip("注册成功！", "success");
-    qDebug() << "user registered: " << jsonObj["email"].toString();
-  });
-}
 
 void RegisterDialog::on_reg_btn_clicked() {
   if (regValid && code_valid) {
@@ -209,10 +184,7 @@ void RegisterDialog::on_getcode_btn_clicked() {
   }
 }
 
-void RegisterDialog::register_mod_finish_slot(ReqId id, HttpResponse rep,
-                                              Modules mod) {
-  Q_UNUSED(id);
-  Q_UNUSED(mod);
+void RegisterDialog::register_finish_slot(const HttpResponse& rep) {
   if (rep.errorCode != ErrorCodes::SUCCESS) {
     QString errMsg;
     switch (rep.errorCode) {
@@ -232,19 +204,37 @@ void RegisterDialog::register_mod_finish_slot(ReqId id, HttpResponse rep,
     showTip(errMsg, "error");
     return;
   }
-  if (id == ReqId::ID_REG_USER) {
-    // 3️⃣ 注册成功
-    QString username = rep.data.value("username").toString();
-    QString email = rep.data.value("email").toString();
+  // 3️⃣ 注册成功
+  QString username = rep.data.value("username").toString();
+  QString email = rep.data.value("email").toString();
 
-    QString successMsg =
-        QString("注册成功！\n\n用户名：%1\n邮箱：%2").arg(username).arg(email);
+  QString successMsg =
+      QString("注册成功！\n\n用户名：%1\n邮箱：%2").arg(username).arg(email);
 
-    showTip("注册成功", "success");
-    qDebug() << "Register success for user:" << username << "(" << email << ")";
+  showTip("注册成功", "success");
+  qDebug() << "Register success for user:" << username << "(" << email << ")";
+}
+
+void RegisterDialog::verify_finish_slot(const HttpResponse& rep) {
+  if (rep.errorCode != ErrorCodes::SUCCESS) {
+    QString errMsg;
+    switch (rep.errorCode) {
+      case ErrorCodes::ERROR_NETWORK:
+        errMsg = "网络连接失败，请检查网络。";
+        break;
+      case ErrorCodes::ERROR_HTTP:
+        errMsg = QString("HTTP错误：%1").arg(rep.httpStatus);
+        break;
+      case ErrorCodes::ERROR_JSON_PARSE:
+        errMsg = "响应数据解析失败。";
+        break;
+      default:
+        errMsg = "未知错误，请稍后重试。";
+        break;
+    }
+    showTip(errMsg, "error");
+    return;
   }
-  if (id == ReqId::ID_GET_VARIFY_CODE) {
-    QString email = rep.data.value("email").toString();
-    showTip(QString("已发送到 %1,注意查收！").arg(email), "success");
-  }
+  QString email = rep.data.value("email").toString();
+  showTip(QString("已发送到 %1,注意查收！").arg(email), "success");
 }

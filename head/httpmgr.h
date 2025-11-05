@@ -24,7 +24,6 @@ class HttpMgr : public QObject,
 
  public slots:
 
-  void http_finish_slot(ReqId id, HttpResponse rep, Modules mod);
   void on_http_reply_finished(QNetworkReply* reply);
 
  private:
@@ -36,8 +35,6 @@ class HttpMgr : public QObject,
  signals:
 
   void http_finish_signal(ReqId id, HttpResponse rep, Modules mod);
-  void register_finish_signal(ReqId id, HttpResponse rep, Modules mod);  //
-  void login_finish_signal(ReqId id, HttpResponse rep, Modules mod);     //
 };
 
 struct HttpResponse {
@@ -48,8 +45,15 @@ struct HttpResponse {
   ErrorCodes errorCode;
 };
 
-class ResponseHandler : public QObject, public Singleton<ResponseHandler> {
+bool ParseErrorCodes(const HttpResponse &rep){
+
+}
+
+class ResponseHandler : public QObject,
+                        public Singleton<ResponseHandler>,
+                        public std::enable_shared_from_this<ResponseHandler> {
   Q_OBJECT
+ private:
   friend class Singleton<ResponseHandler>;
 
  public:
@@ -58,14 +62,15 @@ class ResponseHandler : public QObject, public Singleton<ResponseHandler> {
  signals:
   void login_response_signal(const HttpResponse& rep);
   void register_response_signal(const HttpResponse& rep);
+  void verify_code_response_signal(const HttpResponse &rep);
 
  private slots:
-  void on_http_finish(ReqId id, HttpResponse rep, Modules mod);
+  void on_http_finished(ReqId id, HttpResponse rep, Modules mod);
 
  private:
   ResponseHandler();
   ~ResponseHandler();
   void login_response_handler(const HttpResponse& rep);
   void register_response_handler(const HttpResponse& rep);
-};
+  void verify_code_response_handler(const HttpResponse &rep); };
 #endif  // HTTPMGR_H
