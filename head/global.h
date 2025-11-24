@@ -44,6 +44,12 @@ struct UserRegisterInfo {
   QString _pwd;
 };
 
+struct UserInfo{
+  QString _email;
+  QString _token;
+  QString _username;
+};
+
 
 // 邮箱正则
 static const QRegularExpression emailRegex(R"((\w+)(\.|_)?(\w*)@(\w+)(\.(\w+))+)");

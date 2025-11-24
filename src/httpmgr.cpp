@@ -102,6 +102,7 @@ void ResponseHandler::on_http_finished(ReqId id, HttpResponse rep, Modules mod) 
       break;
     case ReqId::ID_GET_VARIFY_CODE:
       verify_code_response_handler(rep);
+      break;
     default:
       qDebug() << "[ResponseHandler] 未处理的 ReqId: " << static_cast<int>(id);
       break;

@@ -185,8 +185,8 @@ void RegisterDialog::on_getcode_btn_clicked() {
 }
 
 void RegisterDialog::register_finish_slot(const HttpResponse& rep) {
+  QString errMsg;
   if (rep.errorCode != ErrorCodes::SUCCESS) {
-    QString errMsg;
     switch (rep.errorCode) {
       case ErrorCodes::ERROR_NETWORK:
         errMsg = "网络连接失败，请检查网络。";
@@ -204,7 +204,16 @@ void RegisterDialog::register_finish_slot(const HttpResponse& rep) {
     showTip(errMsg, "error");
     return;
   }
-  // 3️⃣ 注册成功
+  if (rep.code != 0) {
+    if (rep.code == 1002) {
+      errMsg = "邮箱已注册";
+    } else if (rep.code == 1003) {
+      errMsg = "验证码错误";
+    }
+    showTip(errMsg, "error");
+    return;
+  }
+  // 注册成功
   QString username = rep.data.value("username").toString();
   QString email = rep.data.value("email").toString();
 

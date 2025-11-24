@@ -35,34 +35,36 @@ LoginDialog::LoginDialog(QWidget* parent)
   });
   connect(ResponseHandler::GetInstance(),
           &ResponseHandler::login_response_signal, this,
-          &LoginDialog::on_login_response);
+          &LoginDialog::login_response_slots);
 }
 
 LoginDialog::~LoginDialog() { delete ui; }
 
 void LoginDialog::on_login_btn_clicked() {
-  auto email = loginInfo->_email;
-  auto pwd = loginInfo->_pwd;
+  emit login_success_signal();
 
-  if (email.isEmpty() || pwd.isEmpty()) {
-    QMessageBox::warning(this, "提示", "请正确输入邮箱或密码");
-    return;
-  }
+  // auto email = loginInfo->_email;
+  // auto pwd = loginInfo->_pwd;
 
-  // 禁用按钮 + 加载动画
-  ui->login_btn->setEnabled(false);
-  ui->login_btn->setText("正在登录中...");
-  ui->login_btn->setIcon(
-      QIcon(QPixmap::fromImage(loadingMovie->currentImage())));
-  loadingMovie->start();
+  // if (email.isEmpty() || pwd.isEmpty()) {
+  //   QMessageBox::warning(this, "提示", "请正确输入邮箱或密码");
+  //   return;
+  // }
 
-  QJsonObject json_obj;
-  json_obj["email"] = email;
-  json_obj["pwd"] = pwd;
+  // // 禁用按钮 + 加载动画
+  // ui->login_btn->setEnabled(false);
+  // ui->login_btn->setText("正在登录中...");
+  // ui->login_btn->setIcon(
+  //     QIcon(QPixmap::fromImage(loadingMovie->currentImage())));
+  // loadingMovie->start();
 
-  HttpMgr::GetInstance()->PostHttpReq(
-      QUrl("http://localhost:8080/api/login/login"), json_obj,
-      ReqId::ID_LOGIN_USER, Modules::LOGIN);
+  // QJsonObject json_obj;
+  // json_obj["email"] = email;
+  // json_obj["pwd"] = pwd;
+
+  // HttpMgr::GetInstance()->PostHttpReq(
+  //     QUrl("http://localhost:8080/api/login/login"), json_obj,
+  //     ReqId::ID_LOGIN_USER, Modules::LOGIN);
 }
 
 void LoginDialog::on_forgetpwd_label_linkActivated(const QString& link) {
@@ -72,7 +74,7 @@ void LoginDialog::on_forgetpwd_label_linkActivated(const QString& link) {
   }
 }
 
-void LoginDialog::on_login_response(const HttpResponse& rep) {
+void LoginDialog::login_response_slots(const HttpResponse& rep) {
   // 停止加载动画
   loadingMovie->stop();
   ui->login_btn->setIcon(QIcon());
@@ -117,4 +119,6 @@ void LoginDialog::on_login_response(const HttpResponse& rep) {
   qDebug() << "登陆成功 用户" << username << "邮箱 ：" << email;
   QMessageBox::information(this, "登陆成功",
                            QString("欢迎回来,%1!").arg(username));
+  this->close();
+  emit login_success_signal();
 }

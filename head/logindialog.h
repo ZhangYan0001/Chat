@@ -24,12 +24,12 @@ class LoginDialog : public QDialog {
 
  signals:
   void login_reg_signal();
-  void login_success_signal(QString email, QString token);
+  void login_success_signal();
 
  private slots:
   void on_login_btn_clicked();
   void on_forgetpwd_label_linkActivated(const QString& link);
-  void on_login_response(const HttpResponse& rep);
+  void login_response_slots(const HttpResponse& rep);
 
  private:
   Ui::LoginDialog* ui;

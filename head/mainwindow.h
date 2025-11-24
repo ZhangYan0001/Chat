@@ -9,6 +9,7 @@
 #include "global.h"
 #include "logindialog.h"
 #include "registerdialog.h"
+#include "chatwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -31,6 +32,7 @@ class MainWindow : public QMainWindow {
   LoginDialog* _login_dlg;
   RegisterDialog* _register_dlg;
   QStackedWidget* _stacked_widget;
+  ChatWindow *_chatwindow;
   signals:
   // void signal_py_kill();
 };

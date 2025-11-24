@@ -45,9 +45,9 @@ struct HttpResponse {
   ErrorCodes errorCode;
 };
 
-bool ParseErrorCodes(const HttpResponse &rep){
+// bool ParseErrorCodes(const HttpResponse &rep){
 
-}
+// }
 
 class ResponseHandler : public QObject,
                         public Singleton<ResponseHandler>,

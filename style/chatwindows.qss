@@ -1,0 +1,48 @@
+/*
+Stylesheet: chatwindows.qss
+Apply using qApp->setStyleSheet(...) or load at runtime.
+*/
+
+
+/* Base colors */
+QWidget { background: #f3f5f7; color: #222; }
+
+
+/* Left panel */
+#leftFrame { background: #ffffff; border-right: 1px solid #e6e6e6; }
+#userAvatarLabel { background: #d9e6f2; border-radius: 28px; min-width:56px; min-height:56px; max-width:56px; max-height:56px; }
+#searchLineEdit { border: 1px solid #e0e6ea; border-radius: 8px; padding: 6px; background: #fbfdff; }
+#conversationListView { background: transparent; padding: 6px; }
+#conversationListView::item { padding: 8px; }
+
+
+/* Center */
+#centerFrame { background: transparent; }
+#chatHeader { background: #ffffff; border-bottom: 1px solid #e9ecef; padding-left: 12px; }
+#messageListView { background: transparent; padding: 16px; }
+
+
+/* Input area */
+#inputArea { background: #ffffff; border-top: 1px solid #e9ecef; padding: 10px; }
+#inputEdit { border: 1px solid #e6e9ec; border-radius: 8px; padding: 8px; }
+#sendButton { background-color: #2d8cf0; color: #fff; border-radius: 8px; padding: 8px 14px; }
+#sendButton:disabled { background-color: #bcd9fb; }
+#emojiButton, #attachButton { background: transparent; border: none; }
+
+
+/* Right */
+#rightFrame { background: #ffffff; border-left: 1px solid #e6e6e6; padding: 12px; }
+
+
+/* ListView item hover */
+QListView::item:hover { background: rgba(45,140,240,0.06); border-radius: 8px; }
+
+
+/* Scrollbars (light customization) */
+QScrollBar:vertical { width:10px; background: transparent; }
+QScrollBar::handle:vertical { background: rgba(0,0,0,0.15); border-radius:5px; }
+
+
+
+
+// End of document

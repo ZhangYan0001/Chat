@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>images/previous.png</file>
         <file>style/reg_dlg_style.qss</file>
+        <file>style/chatwindows.qss</file>
         <file>images/loading.gif</file>
     </qresource>
 </RCC>
